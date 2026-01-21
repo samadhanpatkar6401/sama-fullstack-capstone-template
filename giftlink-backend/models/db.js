@@ -1,28 +1,37 @@
-// db.js
-require('dotenv').config();
-const MongoClient = require('mongodb').MongoClient;
+const express = require('express');
+const router = express.Router();
+const connectToDatabase = require('../models/db');
 
-// MongoDB connection URL with authentication options
-let url = `${process.env.MONGO_URL}`;
-
-let dbInstance = null;
-const dbName = "giftdb";
-
-async function connectToDatabase() {
-    if (dbInstance){
-        return dbInstance;
+// Get all gifts
+router.get('/', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const collection = db.collection("gifts");
+        const gifts = await collection.find({}).toArray();
+        res.json(gifts);
+    } catch (e) {
+        console.error('Error fetching gifts:', e);
+        res.status(500).send('Error fetching gifts');
     }
+});
 
-    const client = new MongoClient(url);
+// Get a gift by ID
+router.get('/:id', async (req, res) => {
+    try {
+        const db = await connectToDatabase();
+        const collection = db.collection("gifts");
+        const id = req.params.id;
+        const gift = await collection.findOne({ id: id });
 
-    // Task 1: Connect to MongoDB
-    await client.connect();
+        if (!gift) {
+            return res.status(404).send('Gift not found');
+        }
 
-    // Task 2: Connect to database giftDB and store in variable dbInstance
-    dbInstance = client.db(dbName);
+        res.json(gift);
+    } catch (e) {
+        console.error('Error fetching gift:', e);
+        res.status(500).send('Error fetching gift');
+    }
+});
 
-    // Task 3: Return database instance
-    return dbInstance;
-}
-
-module.exports = connectToDatabase;
+module.exports = router;
