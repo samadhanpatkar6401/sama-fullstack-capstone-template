@@ -1,37 +1,27 @@
-const express = require('express');
-const router = express.Router();
-const connectToDatabase = require('../models/db');
+require('dotenv').config();
+const { MongoClient } = require('mongodb');
 
-// Get all gifts
-router.get('/', async (req, res) => {
-    try {
-        const db = await connectToDatabase();
-        const collection = db.collection("gifts");
-        const gifts = await collection.find({}).toArray();
-        res.json(gifts);
-    } catch (e) {
-        console.error('Error fetching gifts:', e);
-        res.status(500).send('Error fetching gifts');
-    }
-});
+const MONGO_URI = process.env.MONGO_URI;
+const DB_NAME = 'giftsdb';
 
-// Get a gift by ID
-router.get('/:id', async (req, res) => {
-    try {
-        const db = await connectToDatabase();
-        const collection = db.collection("gifts");
-        const id = req.params.id;
-        const gift = await collection.findOne({ id: id });
+let db;
 
-        if (!gift) {
-            return res.status(404).send('Gift not found');
-        }
+async function connectToDatabase() {
+  if (!MONGO_URI) {
+    throw new Error('MONGO_URI is undefined');
+  }
 
-        res.json(gift);
-    } catch (e) {
-        console.error('Error fetching gift:', e);
-        res.status(500).send('Error fetching gift');
-    }
-});
+  if (db) return db;
 
-module.exports = router;
+  const client = new MongoClient(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+
+  await client.connect();
+  db = client.db(DB_NAME);
+
+  return db;
+}
+
+module.exports = connectToDatabase;
