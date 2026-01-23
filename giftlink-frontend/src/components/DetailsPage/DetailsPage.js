@@ -75,23 +75,24 @@ function DetailsPage() {
 
                 <div className="card-body">
                     <div className="image-placeholder-large">
-                        {gift.image ? (
-                            <img
-                                src={`/images/${gift.image}`}
-                                alt={gift.name}
-                                className="product-image-large"
-                            />
-                        ) : (
-                            <div className="no-image-available-large">
-                                No Image Available
-                            </div>
-                        )}
-                    </div>
+  {gift.image ? (
+    <img
+      src={gift.image}
+      alt={gift.name}
+      className="product-image-large"
+    />
+  ) : (
+    <div className="no-image-available-large">No Image Available</div>
+  )}
+</div>
+
+
+
 
                     <p><strong>Category:</strong> {gift.category}</p>
                     <p><strong>Condition:</strong> {gift.condition}</p>
-                    <p><strong>Date Added:</strong> {gift.dateAdded}</p>
-                    <p><strong>Age (Years):</strong> {gift.age}</p>
+                    <p><strong>Date Added:</strong> {new Date(gift.date_added * 1000).toDateString()}</p>
+                    <p><strong>Age (Years):</strong> {gift.age_years}</p>
                     <p><strong>Description:</strong> {gift.description}</p>
                 </div>
             </div>

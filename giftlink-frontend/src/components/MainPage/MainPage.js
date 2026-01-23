@@ -46,12 +46,13 @@
                         <div key={gift.id} className="col-md-4 mb-4">
                             <div className="card product-card">
                                 <div className="image-placeholder">
-                                    {gift.image ? (
-                                        <img src={gift.image} alt={gift.name} />
-                                    ) : (
-                                        <div className="no-image-available">No Image Available</div>
-                                    )}
-                                </div>
+  {gifts.image ? (
+    <img src={gifts.image} alt={gifts.name} />
+  ) : (
+    <div className="no-image-available">No Image Available</div>
+  )}
+</div>
+
                                 <div className="card-body">
                                     <h5 className="card-title">{gift.name}</h5>
                                     <p className={`card-text ${getConditionClass(gift.condition)}`}>
