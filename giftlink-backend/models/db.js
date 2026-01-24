@@ -1,27 +1,23 @@
+// db.js
 require('dotenv').config();
-const { MongoClient } = require('mongodb');
+const MongoClient = require('mongodb').MongoClient;
 
-const MONGO_URI = process.env.MONGO_URI;
-const DB_NAME = 'giftsdb';
+// MongoDB connection URL with authentication options
+let url = `${process.env.MONGO_URL}`;
 
-let db;
+let dbInstance = null;
+const dbName = "giftdb";
 
 async function connectToDatabase() {
-  if (!MONGO_URI) {
-    throw new Error('MONGO_URI is undefined');
-  }
+    if (dbInstance){
+        return dbInstance
+    };
 
-  if (db) return db;
+    const client = new MongoClient(url);
 
-  const client = new MongoClient(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
-
-  await client.connect();
-  db = client.db(DB_NAME);
-
-  return db;
+    await client.connect();
+    dbInstance = client.db(dbName);
+    return dbInstance;
 }
 
 module.exports = connectToDatabase;
